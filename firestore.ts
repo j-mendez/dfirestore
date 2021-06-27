@@ -5,7 +5,7 @@ import type { FetchRequest } from "./client.ts";
 interface FireRequest {
   collection?: string;
   id?: string;
-  update?: object;
+  value?: object;
 }
 
 type RequestInterface = FireRequest & Partial<FetchRequest>;
@@ -56,7 +56,7 @@ const firestore = {
     authorization,
     collection,
     id,
-    update,
+    value,
   }: RequestInterface) => {
     validateRequest({ collection, id });
 
@@ -66,7 +66,7 @@ const firestore = {
       authorization,
       reqBody: {
         name: id,
-        fields: update,
+        fields: value,
       },
     });
   },

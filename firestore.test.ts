@@ -58,7 +58,7 @@ Deno.test({
 });
 
 Deno.test({
-  name: "firestore should pass in token and fetch",
+  name: "firestore should pass in token and fetch document",
   fn: async () => {
     setToken("");
     const d = await firestore.getDocument({ ...body, authorization: t });
@@ -67,25 +67,6 @@ Deno.test({
     setToken(t);
     const dt = await firestore.getDocument({ ...body });
     assertEquals(dt.fields.firstname.stringValue, "Jeff");
-  },
-});
-
-Deno.test({
-  name: "firestore should get list from collection",
-  fn: async () => {
-    const d = await firestore.getDocumentList({ collection: "users" });
-    assertEquals(d.documents.length, 20);
-  },
-});
-
-Deno.test({
-  name: "firestore should update item from collection",
-  fn: async () => {
-    const d = await firestore.updateDocument({
-      ...body,
-      update: { lastname: { stringValue: "Jeff" } },
-    });
-    assertEquals(d.fields.lastname.stringValue, "Jeff");
   },
 });
 
@@ -105,3 +86,36 @@ Deno.test({
   sanitizeResources: false,
   sanitizeOps: false,
 });
+
+Deno.test({
+  name: "firestore should get list from collection",
+  fn: async () => {
+    const d = await firestore.getDocumentList({ collection: "users" });
+    assertEquals(d.documents.length, 20);
+  },
+});
+
+Deno.test({
+  name: "firestore should update item from collection",
+  fn: async () => {
+    const d = await firestore.updateDocument({
+      ...body,
+      value: { lastname: { stringValue: "Jeff" } },
+    });
+    assertEquals(d.fields.lastname.stringValue, "Jeff");
+  },
+});
+
+// Deno.test({
+//   name: "firestore should create item from collection",
+//   fn: async () => {
+//     const d = await firestore.createDocument({
+//       ...body,
+//       value: {
+//         firstname: { stringValue: "Jeff" },
+//         lastname: { stringValue: "Jeff" },
+//       },
+//     });
+//     assertEquals(d.fields.lastname.stringValue, "Jeff");
+//   },
+// });
