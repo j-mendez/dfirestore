@@ -1,2 +1,9 @@
 export { firestore } from "./firestore.ts";
-export { setToken } from "./config.ts";
+export {
+  config,
+  setDatabase,
+  setProjectID,
+  setToken,
+  setTokenFromServiceAccount,
+  setTokenFromEmailPassword,
+} from "./config.ts";
