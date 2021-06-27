@@ -43,36 +43,44 @@ setDatabase("(default)");
 setProjectID("myprojectid");
 ```
 
-### Main
+### Client
 
 Use the REST client below via the following methods to perform CRUD operations.
 
 ```typescript
 import { firestore } from "https://deno.land/dfirestore/mod.ts";
 
+// add new document: Check firebase param values for list key types ex (stringValue).
 await firestore.createDocument({
   collection: "users",
   id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
   value: { firstname: { stringValue: "Jeff" } },
 });
+// get document in collection by id
 await firestore.getDocument({
   collection: "users",
   id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
 });
-await firestore.getDocumentList({
+// get document collection list
+await firestore.getDocument({
   collection: "users",
 });
-await firestore.getDocumentList({
-  collection: "users",
-  project: "somedprojectid",
-});
+// delete document by id
 await firestore.deleteDocument({
   collection: "users",
   id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
 });
+// update document in collection by id
 await firestore.updateDocument({
   collection: "users",
   id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
+  value: { firstname: { stringValue: "Jeff" } },
+});
+// update document in collection by id for set projectID
+await firestore.updateDocument({
+  collection: "users",
+  id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
+  project: "someproj",
   value: { firstname: { stringValue: "Jeff" } },
 });
 ```
@@ -106,3 +114,7 @@ FIREBASE_TOKEN=
 ### CI
 
 CI=false
+
+## Todo
+
+1. pagination `getDocument`

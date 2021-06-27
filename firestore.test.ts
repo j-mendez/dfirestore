@@ -92,7 +92,7 @@ Deno.test({
 Deno.test({
   name: "firestore should get list from collection",
   fn: async () => {
-    const d = await firestore.getDocumentList({ collection: "users" });
+    const d = await firestore.getDocument({ collection: "users" });
     assertEquals(d.documents.length, 1);
   },
 });
