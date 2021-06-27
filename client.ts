@@ -5,6 +5,7 @@ export interface FetchRequest extends Partial<Request> {
   database?: string;
   authorization?: string | boolean;
   reqBody?: object;
+  project?: string;
 }
 
 const client = {
@@ -14,6 +15,7 @@ const client = {
     method = "POST",
     database,
     authorization,
+    project,
   }: FetchRequest): Promise<any> => {
     const requestHeaders: HeadersInit = new Headers();
 
@@ -27,7 +29,9 @@ const client = {
     }
 
     const req = await fetch(
-      `${config.host}/databases/${database ?? config.firebaseDb}/${url}`,
+      `${config.host(project)}/databases/${
+        database ?? config.firebaseDb
+      }/${url}`,
       {
         method,
         body: reqBody && JSON.stringify(reqBody),

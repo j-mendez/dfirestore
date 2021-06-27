@@ -10,7 +10,8 @@ let backgroundRefetchStarted = false;
 
 const config = {
   firebaseDb: Deno.env.get("FIREBASE_DATABASE") ?? "(default)",
-  host: `https://firestore.googleapis.com/v1/projects/${projectID}`,
+  host: (project?: string) =>
+    `https://firestore.googleapis.com/v1/projects/${project ?? projectID}`,
   get token() {
     return this.storedToken?.id_token ?? Deno.env.get(FIREBASE_TOKEN);
   },
@@ -73,10 +74,11 @@ const setTokenFromEmailPassword = async (
     email?: string;
     password?: string;
     refreshToken?: string;
+    key?: string;
   },
   refresh: boolean = false
 ) => {
-  const { email, refreshToken, password } = params ?? {};
+  const { email, key, refreshToken, password } = params ?? {};
 
   let baseUrl = "";
   let body = {};
@@ -96,7 +98,7 @@ const setTokenFromEmailPassword = async (
     };
   }
 
-  const firebase = await fetch(`https://${baseUrl}?key=${projectkey}`, {
+  const firebase = await fetch(`https://${baseUrl}?key=${key ?? projectkey}`, {
     headers: {
       contentType: "application/json",
     },
@@ -105,7 +107,6 @@ const setTokenFromEmailPassword = async (
   });
 
   const json = await firebase.json();
-
   const token = json?.idToken;
 
   token && setToken(token);
