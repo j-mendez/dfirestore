@@ -64,7 +64,7 @@ await firestore.deleteDocument({
 await firestore.updateDocument({
   collection: "mycollection",
   id: "collection id",
-  update: { firstname: "Jeff" },
+  update: { lastname: { stringValue: "Jeff" } },
 });
 ```
 

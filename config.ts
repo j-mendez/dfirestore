@@ -29,12 +29,13 @@ const setProjectID = (id: string) => {
   Deno.env.set(FIREBASE_PROJECT_ID, id);
 };
 
-const setToken = (token: string) => {
+const setToken = (token: string): string => {
   Deno.env.set(FIREBASE_TOKEN, token);
   Deno.writeTextFileSync(
     "./firebase_auth_token.json",
     JSON.stringify({ id_token: token })
   );
+  return token;
 };
 
 const setDatabase = (db: string) => {
