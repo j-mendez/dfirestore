@@ -11,7 +11,13 @@ jobs:
         with:
           deno-version: "1.10.3"
       - name: Run test
-        run: FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID FIREBASE_TOKEN=$FIREBASE_TOKEN deno test --allow-net=firestore.googleapis.com --allow-env --allow-read -A
+        run:
+          FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID FIREBASE_TOKEN=$FIREBASE_TOKEN FIREBASE_PROJECT_KEY=$FIREBASE_PROJECT_KEY
+          FIREBASE_AUTH_EMAIL=$FIREBASE_AUTH_EMAIL FIREBASE_AUTH_PASSWORD=$FIREBASE_AUTH_PASSWORD
+          deno test --unstable --allow-run --allow-net=firestore.googleapis.com,identitytoolkit.googleapis.com --allow-env --allow-read --allow-write -A
         env:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_AUTH_EMAIL: ${{ secrets.FIREBASE_AUTH_EMAIL }}
+          FIREBASE_AUTH_PASSWORD: ${{ secrets.FIREBASE_AUTH_PASSWORD }}
+          FIREBASE_PROJECT_KEY: ${{ secrets.FIREBASE_PROJECT_KEY }}

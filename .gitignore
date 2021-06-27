@@ -2,3 +2,6 @@
 .DS_Store
 .env
 GoogleService-Info.plist
+
+# self token
+firebase_auth_token.json

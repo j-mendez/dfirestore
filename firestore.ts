@@ -9,13 +9,32 @@ interface FireRequest {
 
 type RequestInterface = FireRequest & Partial<FetchRequest>;
 
+const validateRequest = ({ collection, id }: RequestInterface) => {
+  if (!collection) {
+    throw new Error("Collection required");
+  }
+  if (!id) {
+    throw new Error("ID Required");
+  }
+};
+
 const firestore = {
   getDocument: async ({ authorization, collection, id }: RequestInterface) => {
+    validateRequest({ collection, id });
+
+    return await client.request({
+      method: "GET",
+      url: `documents/${collection}/${id}`,
+      authorization,
+    });
+  },
+  getDocumentList: async ({
+    authorization,
+    collection,
+    id,
+  }: RequestInterface) => {
     if (!collection) {
       throw new Error("Collection required");
-    }
-    if (!id) {
-      throw new Error("ID Required");
     }
     return await client.request({
       method: "GET",
@@ -23,24 +42,29 @@ const firestore = {
       authorization,
     });
   },
-  getDocuementList: async ({ authorization }: RequestInterface) => {
-    return await client.request({
-      method: "GET",
-      url: "documents/users/L0xO1Yri80WlrFSw6KxqccHhKhv2",
-      authorization,
-    });
-  },
-  deleteDocuement: async ({ authorization }: RequestInterface) => {
+  deleteDocument: async ({
+    authorization,
+    collection,
+    id,
+  }: RequestInterface) => {
+    validateRequest({ collection, id });
+
     return await client.request({
       method: "DELETE",
-      url: "documents/users/L0xO1Yri80WlrFSw6KxqccHhKhv2",
+      url: `documents/${collection}/${id}`,
       authorization,
     });
   },
-  updateDocuement: async ({ authorization }: RequestInterface) => {
+  updateDocument: async ({
+    authorization,
+    collection,
+    id,
+  }: RequestInterface) => {
+    validateRequest({ collection, id });
+
     return await client.request({
       method: "PATCH",
-      url: "documents/users/L0xO1Yri80WlrFSw6KxqccHhKhv2",
+      url: `documents/${collection}/${id}`,
       authorization,
     });
   },
