@@ -1,0 +1,17 @@
+name: test
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: "1.10.3"
+      - name: Run test
+        run: FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID FIREBASE_TOKEN=$FIREBASE_TOKEN deno test --allow-net=firestore.googleapis.com --allow-env --allow-read -A
+        env:
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
