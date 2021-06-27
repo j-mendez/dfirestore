@@ -5,6 +5,7 @@ import type { FetchRequest } from "./client.ts";
 interface FireRequest {
   collection?: string;
   id?: string;
+  update?: object;
 }
 
 type RequestInterface = FireRequest & Partial<FetchRequest>;
@@ -28,17 +29,13 @@ const firestore = {
       authorization,
     });
   },
-  getDocumentList: async ({
-    authorization,
-    collection,
-    id,
-  }: RequestInterface) => {
+  getDocumentList: async ({ authorization, collection }: RequestInterface) => {
     if (!collection) {
       throw new Error("Collection required");
     }
     return await client.request({
       method: "GET",
-      url: `documents/${collection}/${id}`,
+      url: `documents/${collection}`,
       authorization,
     });
   },
@@ -59,6 +56,7 @@ const firestore = {
     authorization,
     collection,
     id,
+    update,
   }: RequestInterface) => {
     validateRequest({ collection, id });
 
@@ -66,6 +64,7 @@ const firestore = {
       method: "PATCH",
       url: `documents/${collection}/${id}`,
       authorization,
+      reqBody: update,
     });
   },
 };

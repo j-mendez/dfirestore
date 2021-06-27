@@ -54,9 +54,18 @@ await firestore.getDocument({
   collection: "mycollection",
   id: "collection id",
 });
-await firestore.getDocumentList("document");
-await firestore.deleteDocument("document/id");
-await firestore.updateDocument("document/id");
+await firestore.getDocumentList({
+  collection: "mycollection",
+});
+await firestore.deleteDocument({
+  collection: "mycollection",
+  id: "collection id",
+});
+await firestore.updateDocument({
+  collection: "mycollection",
+  id: "collection id",
+  update: { firstname: "Jeff" },
+});
 ```
 
 ## ENV variables

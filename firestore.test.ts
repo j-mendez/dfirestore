@@ -1,7 +1,6 @@
 import { assertEquals } from "./test_deps.ts";
 import { firestore } from "./firestore.ts";
 import {
-  config,
   setToken,
   setTokenFromServiceAccount,
   setTokenFromEmailPassword,
@@ -64,6 +63,18 @@ Deno.test({
     setToken("");
     const d = await firestore.getDocument({ ...body, authorization: t });
     assertEquals(d.fields.firstname.stringValue, "Jeff");
+    // reset token
+    setToken(t);
+    const dt = await firestore.getDocument({ ...body });
+    assertEquals(dt.fields.firstname.stringValue, "Jeff");
+  },
+});
+
+Deno.test({
+  name: "firestore should get list from collection",
+  fn: async () => {
+    const d = await firestore.getDocumentList({ collection: "users" });
+    assertEquals(d.documents.length, 20);
   },
 });
 

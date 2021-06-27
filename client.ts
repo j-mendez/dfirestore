@@ -4,12 +4,13 @@ export interface FetchRequest extends Partial<Request> {
   url: string;
   database?: string;
   authorization?: string | boolean;
+  reqBody?: object;
 }
 
 const client = {
   request: async ({
     url,
-    body,
+    reqBody,
     method = "POST",
     database,
     authorization,
@@ -29,7 +30,7 @@ const client = {
       `${config.host}/databases/${database ?? config.firebaseDb}/${url}`,
       {
         method,
-        body: body && JSON.stringify(body),
+        body: reqBody && JSON.stringify(reqBody),
         headers: requestHeaders,
       }
     );
