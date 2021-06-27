@@ -64,7 +64,10 @@ const firestore = {
       method: "PATCH",
       url: `documents/${collection}/${id}`,
       authorization,
-      reqBody: update,
+      reqBody: {
+        name: id,
+        fields: update,
+      },
     });
   },
 };

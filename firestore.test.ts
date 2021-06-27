@@ -79,6 +79,18 @@ Deno.test({
 });
 
 Deno.test({
+  name: "firestore should update item from collection",
+  fn: async () => {
+    const d = await firestore.updateDocument({
+      ...body,
+      update: { lastname: { stringValue: "Jeff" } },
+    });
+    console.log(d);
+    assertEquals(d.fields.lastname.stringValue, "Jeff");
+  },
+});
+
+Deno.test({
   name: "firestore should get token from service account",
   fn: async () => {
     if (Boolean(Deno.env.get("CI")) === true) {
