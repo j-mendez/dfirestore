@@ -75,19 +75,20 @@ If you have a .env file the below env variables will be picked up. If you not yo
 ### Project
 
 ```
-FIREBASE_DATABASE=
+FIREBASE_DATABASE=(default)
 FIREBASE_PROJECT_ID=
 ```
 
 ### IAM admin auth - via email, password
 
 ```
+# the web api key
 FIREBASE_PROJECT_KEY=
 FIREBASE_AUTH_EMAIL=
 FIREBASE_AUTH_PASSWORD=
 ```
 
-### Explicite authenticated user
+### Explicite User TOKEN
 
 ```
 FIREBASE_TOKEN=

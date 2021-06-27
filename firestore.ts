@@ -52,6 +52,23 @@ const firestore = {
       authorization,
     });
   },
+  createDocument: async ({
+    authorization,
+    collection,
+    id,
+    value,
+  }: RequestInterface) => {
+    validateRequest({ collection, id });
+
+    return await client.request({
+      method: "POST",
+      url: `documents/${collection}?documentId=${id}`,
+      authorization,
+      reqBody: {
+        fields: value,
+      },
+    });
+  },
   updateDocument: async ({
     authorization,
     collection,
@@ -65,7 +82,6 @@ const firestore = {
       url: `documents/${collection}/${id}`,
       authorization,
       reqBody: {
-        name: id,
         fields: value,
       },
     });

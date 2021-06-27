@@ -105,7 +105,6 @@ const setTokenFromEmailPassword = async (
   });
 
   const json = await firebase.json();
-
   const token = json?.idToken;
 
   token && setToken(token);
