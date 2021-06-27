@@ -26,26 +26,12 @@ const firestore = {
     id,
     project,
   }: RequestInterface) => {
-    validateRequest({ collection, id });
-
-    return await client.request({
-      method: "GET",
-      url: `documents/${collection}/${id}`,
-      authorization,
-      project,
-    });
-  },
-  getDocumentList: async ({
-    authorization,
-    collection,
-    project,
-  }: RequestInterface) => {
     if (!collection) {
       throw new Error("Collection required");
     }
     return await client.request({
       method: "GET",
-      url: `documents/${collection}`,
+      url: id ? `documents/${collection}/${id}` : `documents/${collection}`,
       authorization,
       project,
     });
@@ -72,11 +58,12 @@ const firestore = {
     value,
     project,
   }: RequestInterface) => {
-    validateRequest({ collection, id });
-
+    if (!collection) {
+      throw new Error("Collection required");
+    }
     return await client.request({
       method: "POST",
-      url: `documents/${collection}?documentId=${id}`,
+      url: `documents/${collection}${id ? `?documentId=${id}` : ""}`,
       authorization,
       reqBody: {
         fields: value,
