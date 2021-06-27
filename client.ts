@@ -18,11 +18,11 @@ const client = {
 
     requestHeaders.set("Content-Type", "application/json");
 
-    if (authorization ?? config?.token) {
-      requestHeaders.set(
-        "Authorization",
-        `Bearer ${authorization ?? config.token}`
-      );
+    const token =
+      typeof authorization !== "undefined" ? authorization : config.token;
+
+    if (token) {
+      requestHeaders.set("Authorization", `Bearer ${token}`);
     }
 
     const req = await fetch(
