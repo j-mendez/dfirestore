@@ -14,7 +14,26 @@ const body = {
 const t = await setTokenFromEmailPassword();
 
 Deno.test({
-  name: "firestore should run",
+  name: "firestore should create a new item in collection",
+  fn: async () => {
+    const d = await firestore.createDocument({
+      ...body,
+      value: {
+        firstname: { stringValue: "Jeff" },
+        lastname: { stringValue: "Jeff" },
+      },
+    });
+
+    if (d.error?.status === "ALREADY_EXISTS") {
+      assertEquals(d.error.code, 409);
+    } else {
+      assertEquals(d.fields.lastname.stringValue, "Jeff");
+    }
+  },
+});
+
+Deno.test({
+  name: "firestore should run and fetch document",
   fn: async () => {
     const d = await firestore.getDocument({ ...body });
     assertEquals(d.fields.firstname.stringValue, "Jeff");
@@ -62,11 +81,33 @@ Deno.test({
   fn: async () => {
     setToken("");
     const d = await firestore.getDocument({ ...body, authorization: t });
-    assertEquals(d.fields.firstname.stringValue, "Jeff");
+    assertEquals(d.fields.lastname.stringValue, "Jeff");
     // reset token
     setToken(t);
     const dt = await firestore.getDocument({ ...body });
-    assertEquals(dt.fields.firstname.stringValue, "Jeff");
+    assertEquals(dt.fields.lastname.stringValue, "Jeff");
+  },
+});
+
+Deno.test({
+  name: "firestore should get list from collection",
+  fn: async () => {
+    const d = await firestore.getDocumentList({ collection: "users" });
+    assertEquals(d.documents.length, 1);
+  },
+});
+
+Deno.test({
+  name: "firestore should update item from collection",
+  fn: async () => {
+    const d = await firestore.updateDocument({
+      ...body,
+      value: {
+        firstname: { stringValue: "Jeff" },
+        lastname: { stringValue: "Jeff" },
+      },
+    });
+    assertEquals(d.fields.lastname.stringValue, "Jeff");
   },
 });
 
@@ -86,36 +127,3 @@ Deno.test({
   sanitizeResources: false,
   sanitizeOps: false,
 });
-
-Deno.test({
-  name: "firestore should get list from collection",
-  fn: async () => {
-    const d = await firestore.getDocumentList({ collection: "users" });
-    assertEquals(d.documents.length, 20);
-  },
-});
-
-Deno.test({
-  name: "firestore should update item from collection",
-  fn: async () => {
-    const d = await firestore.updateDocument({
-      ...body,
-      value: { lastname: { stringValue: "Jeff" } },
-    });
-    assertEquals(d.fields.lastname.stringValue, "Jeff");
-  },
-});
-
-// Deno.test({
-//   name: "firestore should create item from collection",
-//   fn: async () => {
-//     const d = await firestore.createDocument({
-//       ...body,
-//       value: {
-//         firstname: { stringValue: "Jeff" },
-//         lastname: { stringValue: "Jeff" },
-//       },
-//     });
-//     assertEquals(d.fields.lastname.stringValue, "Jeff");
-//   },
-// });

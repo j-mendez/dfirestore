@@ -1,6 +1,6 @@
 # dfirestore
 
-a deno Firebase Firestore REST client
+a deno Firebase [Firestore](https://firebase.google.com/docs/firestore) REST client
 
 ## Usage
 
@@ -21,12 +21,12 @@ import {
 } from "https://deno.land/x/dfirestore/mod.ts";
 
 /*
- * CONFIGURATION: Add authentication token for all request. Use one of the `setToken` methods below
+ * CONFIGURATION: Add authentication token for all request. Use one of the `setToken` methods below all configs are optional.
  */
 
-// If GoogleService-Info.plist and gcloud installed on machine run to get service token
+// Optional: If GoogleService-Info.plist and gcloud installed on machine run to get service token
 setTokenFromServiceAccount();
-// If Email and Password secret shared. optional params if using env variables
+// Optional: If Email and Password secret shared. Optional params when using env variables
 setTokenFromEmailPassword(
   {
     email: "someemail@something.com",
@@ -34,12 +34,12 @@ setTokenFromEmailPassword(
   },
   true // background refresh token before expiration
 );
-// Manually set authentication
-setToken("FIREBASE_AUTHORIZATION_TOKEN");
+// Optional: Manually set authentication from access token (jwt)
+setToken("someidtoken");
 
-// set db
+// Optional: set db
 setDatabase("(default)");
-// set project
+// Optional: set project id
 setProjectID("myprojectid");
 ```
 
@@ -50,44 +50,54 @@ Use the REST client below via the following methods to perform CRUD operations.
 ```typescript
 import { firestore } from "https://deno.land/dfirestore/mod.ts";
 
+await firestore.createDocument({
+  collection: "users",
+  id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
+  value: { firstname: { stringValue: "Jeff" } },
+});
 await firestore.getDocument({
-  collection: "mycollection",
-  id: "collection id",
+  collection: "users",
+  id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
 });
 await firestore.getDocumentList({
-  collection: "mycollection",
+  collection: "users",
+});
+await firestore.getDocumentList({
+  collection: "users",
+  project: "somedprojectid",
 });
 await firestore.deleteDocument({
-  collection: "mycollection",
-  id: "collection id",
+  collection: "users",
+  id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
 });
 await firestore.updateDocument({
-  collection: "mycollection",
-  id: "collection id",
-  update: { lastname: { stringValue: "Jeff" } },
+  collection: "users",
+  id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
+  value: { firstname: { stringValue: "Jeff" } },
 });
 ```
 
 ## ENV variables
 
-If you have a .env file the below env variables will be picked up. If you not you need to make sure you pass in the required params.
+The env variables below will help setup the project defaults so you do not have to manually configure at the application level. If you are not going to setup any of the envs below you need to make sure you pass in the required params.
 
 ### Project
 
 ```
-FIREBASE_DATABASE=
+FIREBASE_DATABASE=(default)
 FIREBASE_PROJECT_ID=
 ```
 
-### IAM admin auth - via email, password
+### IAM / admin auth / user
 
 ```
+# the web api key
 FIREBASE_PROJECT_KEY=
 FIREBASE_AUTH_EMAIL=
 FIREBASE_AUTH_PASSWORD=
 ```
 
-### Explicite authenticated user
+### Explicite User Token
 
 ```
 FIREBASE_TOKEN=

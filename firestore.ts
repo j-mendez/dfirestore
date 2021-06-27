@@ -20,16 +20,26 @@ const validateRequest = ({ collection, id }: RequestInterface) => {
 };
 
 const firestore = {
-  getDocument: async ({ authorization, collection, id }: RequestInterface) => {
+  getDocument: async ({
+    authorization,
+    collection,
+    id,
+    project,
+  }: RequestInterface) => {
     validateRequest({ collection, id });
 
     return await client.request({
       method: "GET",
       url: `documents/${collection}/${id}`,
       authorization,
+      project,
     });
   },
-  getDocumentList: async ({ authorization, collection }: RequestInterface) => {
+  getDocumentList: async ({
+    authorization,
+    collection,
+    project,
+  }: RequestInterface) => {
     if (!collection) {
       throw new Error("Collection required");
     }
@@ -37,12 +47,14 @@ const firestore = {
       method: "GET",
       url: `documents/${collection}`,
       authorization,
+      project,
     });
   },
   deleteDocument: async ({
     authorization,
     collection,
     id,
+    project,
   }: RequestInterface) => {
     validateRequest({ collection, id });
 
@@ -50,6 +62,26 @@ const firestore = {
       method: "DELETE",
       url: `documents/${collection}/${id}`,
       authorization,
+      project,
+    });
+  },
+  createDocument: async ({
+    authorization,
+    collection,
+    id,
+    value,
+    project,
+  }: RequestInterface) => {
+    validateRequest({ collection, id });
+
+    return await client.request({
+      method: "POST",
+      url: `documents/${collection}?documentId=${id}`,
+      authorization,
+      reqBody: {
+        fields: value,
+      },
+      project,
     });
   },
   updateDocument: async ({
@@ -57,6 +89,7 @@ const firestore = {
     collection,
     id,
     value,
+    project,
   }: RequestInterface) => {
     validateRequest({ collection, id });
 
@@ -65,9 +98,9 @@ const firestore = {
       url: `documents/${collection}/${id}`,
       authorization,
       reqBody: {
-        name: id,
         fields: value,
       },
+      project,
     });
   },
 };
