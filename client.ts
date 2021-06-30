@@ -6,6 +6,8 @@ export interface FetchRequest extends Partial<Request> {
   authorization?: string | boolean;
   reqBody?: object;
   project?: string;
+  pageSize?: number;
+  pageToken?: string;
 }
 
 const client = {
@@ -16,6 +18,8 @@ const client = {
     database,
     authorization,
     project,
+    pageSize,
+    pageToken,
   }: FetchRequest): Promise<any> => {
     const requestHeaders: HeadersInit = new Headers();
 
@@ -28,10 +32,13 @@ const client = {
       requestHeaders.set("Authorization", `Bearer ${token}`);
     }
 
+    const size = pageSize ? `?pageSize=${Number(pageSize)}` : "";
+    const page = pageToken ? `${size ? "&" : "?"}pageToken=${pageToken}` : "";
+
     const req = await fetch(
       `${config.host(project)}/databases/${
         database ?? config.firebaseDb
-      }/${url}`,
+      }/${url}${size}${page}`,
       {
         method,
         body: reqBody && JSON.stringify(reqBody),
@@ -39,9 +46,7 @@ const client = {
       }
     );
 
-    const json = await req.json();
-
-    return json;
+    return await req.json();
   },
 };
 
