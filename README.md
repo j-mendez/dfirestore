@@ -12,7 +12,7 @@ For examples of values to use when perform creates/updates can be found at [Fire
 
 ### Configuration
 
-All pre-configuration settings are optional. You should use `setProjectID` to establish your project if you are going to use the same one for every request.
+All pre-configuration settings are optional. You should use `setProjectID` to establish your project if you are going to use the same one for every request. If you the second param for `setTokenFromEmailPassword` is set to true you need to make sure you have read and write permissions since we currently use a sub process that needs the permissions to store the new token before expiration. Make sure to start deno with the following `--unstable --allow-run --allow-net=firestore.googleapis.com,identitytoolkit.googleapis.com` to allow network request to firestore.
 
 ```typescript
 import {

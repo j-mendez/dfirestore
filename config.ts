@@ -8,6 +8,30 @@ export const projectkey = Deno.env.get(FIREBASE_PROJECT_KEY) ?? "";
 
 let backgroundRefetchStarted = false;
 
+const firebaseAuthTokenPath = "./firebase_auth_token.json";
+
+const descriptor = {
+  name: "read",
+  path: firebaseAuthTokenPath,
+} as const;
+
+const readAuthStatus = await Deno.permissions.query(descriptor);
+const writeAuthStatus = await Deno.permissions.query({
+  ...descriptor,
+  name: "write",
+});
+
+let readAuthAllowed = false;
+let writeAuthAllowed = false;
+
+if (readAuthStatus.state === "granted") {
+  readAuthAllowed = true;
+}
+
+if (writeAuthStatus.state === "granted") {
+  writeAuthAllowed = true;
+}
+
 const config = {
   firebaseDb: Deno.env.get("FIREBASE_DATABASE") ?? "(default)",
   host: (project?: string) =>
@@ -16,13 +40,13 @@ const config = {
     return this.storedToken?.id_token ?? Deno.env.get(FIREBASE_TOKEN);
   },
   get storedToken() {
-    try {
-      const file = Deno.readTextFileSync("./firebase_auth_token.json");
-
-      return file ? JSON.parse(file) : null;
-    } catch (e) {
-      console.error(e);
+    if (!readAuthAllowed) {
+      return null;
     }
+    try {
+      const file = Deno.readTextFileSync(descriptor.path);
+      return file ? JSON.parse(file) : null;
+    } catch (e) {}
   },
 };
 
@@ -32,10 +56,12 @@ const setProjectID = (id: string) => {
 
 const setToken = (token: string): string => {
   Deno.env.set(FIREBASE_TOKEN, token);
-  Deno.writeTextFileSync(
-    "./firebase_auth_token.json",
-    JSON.stringify({ id_token: token })
-  );
+  if (writeAuthStatus) {
+    Deno.writeTextFileSync(
+      "./firebase_auth_token.json",
+      JSON.stringify({ id_token: token })
+    );
+  }
   return token;
 };
 
