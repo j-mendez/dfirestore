@@ -64,6 +64,11 @@ await firestore.getDocument({
 // get document collection list
 await firestore.getDocument({
   collection: "users",
+  pageSize: 10, // optional: page limit
+  pageToken: "thepagetokenfornextpage", // optional: page token to get the next page
+  orderBy: "desc", // optional: order desc, key, etc
+  showMissing: false, // optional: show missing props
+  mask: { fieldPaths: ["id", "name"] }, // optional: mask the object fields
 });
 // delete document by id
 await firestore.deleteDocument({
@@ -110,11 +115,3 @@ FIREBASE_AUTH_PASSWORD=
 ```
 FIREBASE_TOKEN=
 ```
-
-### CI
-
-CI=false
-
-## Todo
-
-1. pagination `getDocument`

@@ -24,7 +24,12 @@ const firestore = {
     authorization,
     collection,
     id,
+    mask,
     project,
+    pageSize,
+    pageToken,
+    orderBy,
+    showMissing,
   }: RequestInterface) => {
     if (!collection) {
       throw new Error("Collection required");
@@ -34,6 +39,10 @@ const firestore = {
       url: id ? `documents/${collection}/${id}` : `documents/${collection}`,
       authorization,
       project,
+      pageSize,
+      pageToken,
+      orderBy,
+      mask,
     });
   },
   deleteDocument: async ({
