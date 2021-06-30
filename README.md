@@ -6,10 +6,11 @@ a deno Firebase [Firestore](https://firebase.google.com/docs/firestore) REST cli
 
 To get started with the package you can either setup the application with your tokens or authenticate with one of the helpers.
 After you authenticate you can freely use the REST client and your access tokens will rotate before they expire.
+For examples of values to use when perform creates/updates can be found at [Firestore Value Docs](https://firebase.google.com/docs/firestore/reference/rest/v1/Value)
 
 ### Configuration
 
-All configuration settings are optional if you are passing the options per request.
+All pre-configuration settings are optional. You should use `setProjectID` to establish your project if you are going to use the same one for every request.
 
 ```typescript
 import {
@@ -21,7 +22,8 @@ import {
 } from "https://deno.land/x/dfirestore/mod.ts";
 
 /*
- * CONFIGURATION: Add authentication token for all request. Use one of the `setToken` methods below all configs are optional.
+ * CONFIGURATION: Add authentication token for all request.
+ * Use one of the `setToken` methods below all configs are optional.
  */
 
 // Optional: If GoogleService-Info.plist and gcloud installed on machine run to get service token
@@ -36,10 +38,10 @@ setTokenFromEmailPassword(
 );
 // Optional: Manually set authentication from access token (jwt)
 setToken("someidtoken");
-
 // Optional: set db
 setDatabase("(default)");
-// Optional: set project id
+
+// Optional: set project id but nice to use
 setProjectID("myprojectid");
 ```
 
@@ -64,6 +66,11 @@ await firestore.getDocument({
 // get document collection list
 await firestore.getDocument({
   collection: "users",
+  pageSize: 10, // optional: page limit
+  pageToken: "thepagetokenfornextpage", // optional: page token to get the next page
+  orderBy: "desc", // optional: order desc, key, etc
+  showMissing: false, // optional: show missing props
+  mask: { fieldPaths: ["id", "name"] }, // optional: mask the object fields
 });
 // delete document by id
 await firestore.deleteDocument({
@@ -85,9 +92,9 @@ await firestore.updateDocument({
 });
 ```
 
-## ENV variables
+## ENV Variables
 
-The env variables below will help setup the project defaults so you do not have to manually configure at the application level. If you are not going to setup any of the envs below you need to make sure you pass in the required params.
+The environment variables below will help setup the project defaults so you do not have to manually configure at the application level. If you are not going to setup any of the envs below you need to make sure you pass in the required params.
 
 ### Project
 
@@ -110,11 +117,3 @@ FIREBASE_AUTH_PASSWORD=
 ```
 FIREBASE_TOKEN=
 ```
-
-### CI
-
-CI=false
-
-## Todo
-
-1. pagination `getDocument`

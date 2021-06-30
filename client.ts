@@ -6,6 +6,13 @@ export interface FetchRequest extends Partial<Request> {
   authorization?: string | boolean;
   reqBody?: object;
   project?: string;
+  pageSize?: number;
+  pageToken?: string;
+  orderBy?: string;
+  showMissing?: boolean;
+  mask?: {
+    fieldPaths: string[];
+  };
 }
 
 const client = {
@@ -16,6 +23,11 @@ const client = {
     database,
     authorization,
     project,
+    pageSize,
+    pageToken,
+    orderBy,
+    mask,
+    showMissing,
   }: FetchRequest): Promise<any> => {
     const requestHeaders: HeadersInit = new Headers();
 
@@ -28,10 +40,24 @@ const client = {
       requestHeaders.set("Authorization", `Bearer ${token}`);
     }
 
+    const size = pageSize ? `?pageSize=${Number(pageSize)}` : "";
+    const page = pageToken ? `${size ? "&" : "?"}pageToken=${pageToken}` : "";
+    const order = orderBy
+      ? `${size || page ? "&" : "?"}orderBy=${orderBy}`
+      : "";
+    const missing = showMissing
+      ? `${size || page || order ? "&" : "?"}showMissing=${showMissing}`
+      : "";
+    const fields = mask
+      ? `${size || page || order || missing ? "&" : "?"}mask=${JSON.stringify(
+          mask
+        )}`
+      : "";
+
     const req = await fetch(
       `${config.host(project)}/databases/${
         database ?? config.firebaseDb
-      }/${url}`,
+      }/${url}${size}${page}${order}${missing}${fields}`,
       {
         method,
         body: reqBody && JSON.stringify(reqBody),
@@ -39,9 +65,7 @@ const client = {
       }
     );
 
-    const json = await req.json();
-
-    return json;
+    return await req.json();
   },
 };
 
