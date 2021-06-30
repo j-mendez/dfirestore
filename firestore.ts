@@ -43,6 +43,7 @@ const firestore = {
       pageToken,
       orderBy,
       mask,
+      showMissing,
     });
   },
   deleteDocument: async ({

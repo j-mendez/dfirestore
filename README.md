@@ -1,5 +1,7 @@
 # dfirestore
 
+![test workflow](https://github.com/j-mendez/dfirestore/actions/workflows/test.yml/badge.svg)
+
 a deno Firebase [Firestore](https://firebase.google.com/docs/firestore) REST client
 
 ## Usage
