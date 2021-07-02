@@ -1,7 +1,6 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { client } from "./client.ts";
 import type { FetchRequest } from "./client.ts";
-import { EventEmitter } from "./deps.ts";
 import { config } from "./config.ts";
 
 interface FireRequest {
@@ -105,62 +104,51 @@ const fireMethods = {
 };
 
 interface FireEvents {
-  log: RequestInterface;
+  log: RequestInterface & { res: object | undefined };
 }
 
-class FireStore extends EventEmitter<FireEvents> {
-  async log(args: RequestInterface) {
+class FireStore {
+  async log(args: FireEvents["log"]) {
     if (config.eventLog) {
-      await this.emit("log", args);
+      await fireMethods.createDocument({
+        id: undefined,
+        value: {
+          id: { stringValue: args?.id },
+          collection: { stringValue: args?.collection },
+          json_data: { stringValue: JSON.stringify(args.res) },
+          timestamp: { timestampValue: new Date() },
+        },
+        collection: "event_log",
+      });
     }
+    Promise.resolve();
   }
   async createDocument(args: RequestInterface) {
-    const [_, data] = await Promise.all([
-      this.log(args),
-      fireMethods.createDocument(args),
-    ]);
+    const res = await fireMethods.createDocument(args);
+    await this.log({ ...args, res });
 
-    return data;
+    return res;
   }
   async deleteDocument(args: RequestInterface) {
-    const [_, data] = await Promise.all([
-      this.log(args),
-      fireMethods.deleteDocument(args),
-    ]);
+    const res = await fireMethods.deleteDocument(args);
+    await this.log({ ...args, res });
 
-    return data;
+    return res;
   }
   async getDocument(args: RequestInterface) {
-    const [_, data] = await Promise.all([
-      this.log(args),
-      fireMethods.getDocument(args),
-    ]);
+    const res = await fireMethods.getDocument(args);
+    await this.log({ ...args, res });
 
-    return data;
+    return res;
   }
   async updateDocument(args: RequestInterface) {
-    const [_, data] = await Promise.all([
-      this.log(args),
-      fireMethods.updateDocument(args),
-    ]);
+    const res = await fireMethods.updateDocument(args);
+    await this.log({ ...args, res });
 
-    return data;
+    return res;
   }
 }
 
 const firestore = new FireStore();
-
-firestore.on(["log"], async (data: RequestInterface) => {
-  await fireMethods.createDocument({
-    id: undefined,
-    value: {
-      id: { stringValue: data?.id },
-      collection: { stringValue: data?.collection },
-      json_data: { stringValue: JSON.stringify(data) },
-      timestamp: { timestampValue: new Date() },
-    },
-    collection: "event_log",
-  });
-});
 
 export { firestore };
