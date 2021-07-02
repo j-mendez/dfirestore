@@ -48,6 +48,9 @@ const config = {
       return file ? JSON.parse(file) : null;
     } catch (e) {}
   },
+  get eventLog() {
+    return Boolean(Deno.env.get("EVENT_LOG"));
+  },
 };
 
 const setProjectID = (id: string) => {

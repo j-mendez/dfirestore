@@ -119,3 +119,11 @@ FIREBASE_AUTH_PASSWORD=
 ```
 FIREBASE_TOKEN=
 ```
+
+### Events
+
+Log all events (creates a log document on every event )
+
+```
+EVENT_LOG=true
+```
