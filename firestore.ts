@@ -1,15 +1,7 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { client } from "./client.ts";
-import type { FetchRequest } from "./client.ts";
 import { config } from "./config.ts";
-
-interface FireRequest {
-  collection?: string;
-  id?: string;
-  value?: object;
-}
-
-type RequestInterface = FireRequest & Partial<FetchRequest>;
+import type { RequestInterface, FireEvents } from "./types.ts";
 
 const validateRequest = ({ collection, id }: RequestInterface) => {
   if (!collection) {
@@ -101,11 +93,39 @@ const fireMethods = {
       project,
     });
   },
+  beginTransaction: async ({
+    authorization,
+    options,
+    project,
+  }: RequestInterface) => {
+    return await client.request({
+      method: "POST",
+      url: `documents:beginTransaction`,
+      authorization,
+      reqBody: {
+        options,
+      },
+      project,
+    });
+  },
+  commitTransaction: async ({
+    authorization,
+    writes,
+    project,
+    transaction,
+  }: RequestInterface) => {
+    return await client.request({
+      method: "POST",
+      url: `documents:commit`,
+      authorization,
+      reqBody: {
+        writes,
+      },
+      project,
+      transaction,
+    });
+  },
 };
-
-interface FireEvents {
-  log: RequestInterface & { res: object | undefined };
-}
 
 class FireStore {
   async log({ id, collection, res }: FireEvents["log"]) {
@@ -122,6 +142,18 @@ class FireStore {
       });
     }
     Promise.resolve();
+  }
+  async beginTransaction(args: RequestInterface) {
+    const res = await fireMethods.beginTransaction(args);
+    await this.log({ ...args, res });
+
+    return res;
+  }
+  async commitTransaction(args: RequestInterface) {
+    const res = await fireMethods.commitTransaction(args);
+    await this.log({ ...args, res });
+
+    return res;
   }
   async createDocument(args: RequestInterface) {
     const res = await fireMethods.createDocument(args);

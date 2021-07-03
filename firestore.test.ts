@@ -111,6 +111,23 @@ Deno.test({
   },
 });
 
+// Deno.test({
+//   name: "firestore should begin and commit transaction",
+//   fn: async () => {
+//     const d = await firestore.beginTransaction({
+//       transaction: "transaction_id",
+//     });
+//     assertEquals(typeof d.id, "string");
+
+//     const c = await firestore.commitTransaction({
+//       ...body,
+//       transaction: d.id,
+//     });
+
+//     assertEquals(typeof c.id, "string");
+//   },
+// });
+
 Deno.test({
   name: "firestore should get token from service account",
   fn: async () => {

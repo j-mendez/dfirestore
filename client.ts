@@ -1,19 +1,5 @@
 import { config } from "./config.ts";
-
-export interface FetchRequest extends Partial<Request> {
-  url: string;
-  database?: string;
-  authorization?: string | boolean;
-  reqBody?: object;
-  project?: string;
-  pageSize?: number;
-  pageToken?: string;
-  orderBy?: string;
-  showMissing?: boolean;
-  mask?: {
-    fieldPaths: string[];
-  };
-}
+import type { FetchRequest } from "./types.ts";
 
 const client = {
   request: async ({

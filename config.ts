@@ -3,13 +3,7 @@ const FIREBASE_DATABASE = "FIREBASE_DATABASE";
 const FIREBASE_PROJECT_ID = "FIREBASE_PROJECT_ID";
 const FIREBASE_PROJECT_KEY = "FIREBASE_PROJECT_KEY";
 
-export const projectID = Deno.env.get(FIREBASE_PROJECT_ID) ?? "";
-export const projectkey = Deno.env.get(FIREBASE_PROJECT_KEY) ?? "";
-
-let backgroundRefetchStarted = false;
-
 const firebaseAuthTokenPath = "./firebase_auth_token.json";
-
 const descriptor = {
   name: "read",
   path: firebaseAuthTokenPath,
@@ -21,8 +15,12 @@ const writeAuthStatus = await Deno.permissions.query({
   name: "write",
 });
 
+export const projectID = Deno.env.get(FIREBASE_PROJECT_ID) ?? "";
+export const projectkey = Deno.env.get(FIREBASE_PROJECT_KEY) ?? "";
+
 let readAuthAllowed = false;
 let writeAuthAllowed = false;
+let backgroundRefetchStarted = false;
 
 if (readAuthStatus.state === "granted") {
   readAuthAllowed = true;
