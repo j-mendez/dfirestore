@@ -27,7 +27,7 @@ export interface Value {
   booleanValue: boolean;
   integerValue: string;
   doubleValue: number;
-  timestampValue: string;
+  timestampValue: string | Date;
   stringValue: string;
   bytesValue: string;
   referenceValue: string;
@@ -84,7 +84,9 @@ export interface Write {
 export interface FireRequest {
   collection?: string;
   id?: string;
-  value?: object;
+  value?: {
+    [key: string]: Partial<Value>;
+  };
 }
 
 export interface FetchRequest extends Partial<Request> {
@@ -105,7 +107,7 @@ export interface FetchRequest extends Partial<Request> {
   writes?: Write[];
 }
 
-export type RequestInterface = FireRequest & Partial<FetchRequest>;
+export interface RequestInterface extends FireRequest, Partial<FetchRequest> {}
 
 export interface FireEvents {
   log: RequestInterface & { res: object | undefined };
