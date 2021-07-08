@@ -1,4 +1,4 @@
-interface TransactionOptions {
+export interface TransactionOptions {
   readOnly: {
     readTime: string;
   };
@@ -7,22 +7,22 @@ interface TransactionOptions {
   };
 }
 
-interface LatLng {
+export interface LatLng {
   latitude: number;
   longitude: number;
 }
 
-export interface ArrayValue {
+export type ArrayValue = {
   values: Value[];
-}
+};
 
-export interface MapValue {
+export type MapValue = {
   fields: {
-    [key: string]: Value;
+    [key: string]: Partial<Value>;
   };
-}
+};
 
-export interface Value {
+export type Value = {
   nullValue: null;
   booleanValue: boolean;
   integerValue: string;
@@ -34,14 +34,14 @@ export interface Value {
   geoPointValue: LatLng;
   arrayValue: ArrayValue;
   mapValue: MapValue;
-}
+};
 
 export enum ServerValue {
   SERVER_VALUE_UNSPECIFIED,
   REQUEST_TIME,
 }
 
-export interface FieldTransform {
+export type FieldTransform = {
   fieldPath?: string;
   setToServerValue?: ServerValue;
   increment?: Value;
@@ -49,17 +49,17 @@ export interface FieldTransform {
   minimum?: Value;
   appendMissingElements?: ArrayValue;
   removeAllFromArray?: ArrayValue;
-}
+};
 
-export interface Precondition {
+export type Precondition = {
   exists: boolean;
   updateTime: string;
-}
+};
 
 export interface Document {
   name: string;
   fields: {
-    [key: string]: Value;
+    [key: string]: Partial<Value>;
   };
   createTime: string;
   updateTime: string;
@@ -93,7 +93,7 @@ export interface FetchRequest extends Partial<Request> {
   url: string;
   database?: string;
   authorization?: string | boolean;
-  reqBody?: object;
+  reqBody?: Record<string, unknown>;
   project?: string;
   pageSize?: number;
   pageToken?: string;
@@ -107,8 +107,19 @@ export interface FetchRequest extends Partial<Request> {
   writes?: Write[];
 }
 
+export type FireError = {
+  code: number;
+  status: string;
+};
+
+export interface FireResponse {
+  documents: Document[];
+  fields: MapValue["fields"];
+  error?: FireError;
+}
+
 export interface RequestInterface extends FireRequest, Partial<FetchRequest> {}
 
 export interface FireEvents {
-  log: RequestInterface & { res: object | undefined };
+  log: RequestInterface & { res?: FireResponse };
 }

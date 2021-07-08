@@ -5,7 +5,10 @@ const [tick, refreshToken] = Deno.args;
 /**
  * write.ts
  */
-async function writeJson(path: string, data: object): Promise<string> {
+async function writeJson(
+  path: string,
+  data: Record<string, unknown>
+): Promise<string> {
   try {
     await Deno.writeTextFile(path, JSON.stringify(data));
 
@@ -22,17 +25,15 @@ export const refetchToken = async (params?: { refreshToken?: string }) => {
   const { refreshToken } = params ?? {};
   const baseUrl = "securetoken.googleapis.com/v1/token";
 
-  const body = {
-    refresh_token: refreshToken,
-    grant_type: "refresh_token",
-  };
-
   const firebase = await fetch(`https://${baseUrl}?key=${projectkey}`, {
     headers: {
       contentType: "application/json",
     },
     method: "POST",
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      refresh_token: refreshToken,
+      grant_type: "refresh_token",
+    }),
   });
 
   const json = await firebase.json();

@@ -38,13 +38,12 @@ const config = {
     return this.storedToken?.id_token ?? Deno.env.get(FIREBASE_TOKEN);
   },
   get storedToken() {
-    if (!readAuthAllowed) {
+    try {
+      const file = readAuthAllowed && Deno.readTextFileSync(descriptor.path);
+      return file ? JSON.parse(file) : null;
+    } catch (_e) {
       return null;
     }
-    try {
-      const file = Deno.readTextFileSync(descriptor.path);
-      return file ? JSON.parse(file) : null;
-    } catch (e) {}
   },
   get eventLog() {
     return Boolean(Deno.env.get("EVENT_LOG"));
@@ -103,7 +102,7 @@ const setTokenFromEmailPassword = async (
     refreshToken?: string;
     key?: string;
   },
-  refresh: boolean = false
+  refresh?: boolean
 ) => {
   const { email, key, refreshToken, password } = params ?? {};
 

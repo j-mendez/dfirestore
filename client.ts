@@ -1,5 +1,5 @@
 import { config } from "./config.ts";
-import type { FetchRequest } from "./types.ts";
+import type { FetchRequest, FireResponse } from "./types.ts";
 
 const client = {
   request: async ({
@@ -14,7 +14,7 @@ const client = {
     orderBy,
     mask,
     showMissing,
-  }: FetchRequest): Promise<any> => {
+  }: FetchRequest): Promise<FireResponse> => {
     const requestHeaders: HeadersInit = new Headers();
 
     requestHeaders.set("Content-Type", "application/json");
