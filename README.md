@@ -52,7 +52,7 @@ setProjectID("myprojectid");
 Use the REST client below via the following methods to perform CRUD operations.
 
 ```typescript
-import { firestore } from "https://deno.land/dfirestore/mod.ts";
+import { firestore } from "https://deno.land/x/dfirestore/mod.ts";
 
 // add new document: Check firebase param values for list key types ex (stringValue).
 await firestore.createDocument({
