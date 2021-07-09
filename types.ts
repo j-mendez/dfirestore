@@ -13,7 +13,7 @@ export interface LatLng {
 }
 
 export type ArrayValue = {
-  values: Value[];
+  values: Partial<Value>[];
 };
 
 export type MapValue = {
