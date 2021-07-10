@@ -6,6 +6,7 @@ import type {
   CommitTransaction,
   CreateDocument,
   DeleteDocument,
+  MoveDocuments,
   GetDocument,
   FireEvents,
   RequestInterface,
@@ -140,6 +141,36 @@ const fireMethods = {
       transaction,
     });
   },
+  exportDocuments: async ({
+    authorization,
+    collectionIds,
+    outputUriPrefix,
+  }: MoveDocuments) => {
+    return await client.request({
+      method: "POST",
+      url: ":exportDocuments",
+      authorization,
+      reqBody: {
+        collectionIds,
+        outputUriPrefix,
+      },
+    });
+  },
+  importDocuments: async ({
+    authorization,
+    collectionIds,
+    outputUriPrefix,
+  }: MoveDocuments) => {
+    return await client.request({
+      method: "POST",
+      url: ":importDocuments",
+      authorization,
+      reqBody: {
+        collectionIds,
+        outputUriPrefix,
+      },
+    });
+  },
 };
 
 class FireStore {
@@ -158,38 +189,50 @@ class FireStore {
     }
     Promise.resolve();
   }
-  async beginTransaction(args: Partial<RequestInterface>) {
+  async beginTransaction(args: BeginTransaction) {
     const res = await fireMethods.beginTransaction(args);
     await this.log({ ...args, res });
 
     return res;
   }
-  async commitTransaction(args: Partial<RequestInterface>) {
+  async commitTransaction(args: CommitTransaction) {
     const res = await fireMethods.commitTransaction(args);
     await this.log({ ...args, res });
 
     return res;
   }
-  async createDocument(args: Partial<RequestInterface>) {
+  async createDocument(args: CreateDocument) {
     const res = await fireMethods.createDocument(args);
     await this.log({ ...args, res });
 
     return res;
   }
-  async deleteDocument(args: Partial<RequestInterface>) {
+  async deleteDocument(args: DeleteDocument) {
     const res = await fireMethods.deleteDocument(args);
     await this.log({ ...args, res });
 
     return res;
   }
-  async getDocument(args: Partial<RequestInterface>) {
+  async getDocument(args: GetDocument) {
     const res = await fireMethods.getDocument(args);
     await this.log({ ...args, res });
 
     return res;
   }
-  async updateDocument(args: Partial<RequestInterface>) {
+  async updateDocument(args: UpdateDocument) {
     const res = await fireMethods.updateDocument(args);
+    await this.log({ ...args, res });
+
+    return res;
+  }
+  async exportDocuments(args: MoveDocuments) {
+    const res = await fireMethods.exportDocuments(args);
+    await this.log({ ...args, res });
+
+    return res;
+  }
+  async importDocuments(args: MoveDocuments) {
+    const res = await fireMethods.importDocuments(args);
     await this.log({ ...args, res });
 
     return res;

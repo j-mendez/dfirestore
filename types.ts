@@ -164,3 +164,18 @@ export type CommitTransaction = Pick<
   RequestInterface,
   "authorization" | "options" | "project" | "writes" | "transaction"
 >;
+
+export type ImportExport = {
+  /* Which collection ids to export. Unspecified means all collections. */
+  collectionIds?: string[];
+  /*
+   * The output URI. Currently only supports Google Cloud Storage URIs of the
+   * form: gs://BUCKET_NAME[/NAMESPACE_PATH], where BUCKET_NAME is the name of the
+   * Google Cloud Storage bucket and NAMESPACE_PATH
+   * is an optional Google Cloud Storage namespace path.
+   */
+  outputUriPrefix: string;
+};
+
+export type MoveDocuments = Pick<RequestInterface, "authorization"> &
+  ImportExport;
