@@ -181,6 +181,7 @@ export type ImportExport = {
 export type MoveDocuments = Pick<RequestInterface, "authorization"> &
   ImportExport & {
     project: RequestInterface["project"];
+    type: "import" | "export";
   };
 
 export interface RollBack {

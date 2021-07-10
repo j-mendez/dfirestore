@@ -142,34 +142,22 @@ const fireMethods = {
       transaction,
     });
   },
-  exportDocuments: async ({
+  moveDocuments: async ({
+    authorization,
     collectionIds,
     outputUriPrefix,
-    ...params
+    project,
+    type,
   }: MoveDocuments) => {
     return await client.request({
       method: "POST",
-      url: ":exportDocuments",
+      url: `":${type ?? "export"}Documents`,
+      authorization,
       reqBody: {
         collectionIds,
         outputUriPrefix,
       },
-      ...params,
-    });
-  },
-  importDocuments: async ({
-    collectionIds,
-    outputUriPrefix,
-    ...params
-  }: MoveDocuments) => {
-    return await client.request({
-      method: "POST",
-      url: ":importDocuments",
-      reqBody: {
-        collectionIds,
-        outputUriPrefix,
-      },
-      ...params,
+      project,
     });
   },
   rollback: async ({ transaction, authorization }: RollBack) => {
@@ -236,14 +224,8 @@ class FireStore {
 
     return res;
   }
-  async exportDocuments(args: MoveDocuments) {
-    const res = await fireMethods.exportDocuments(args);
-    await this.log({ ...args, res });
-
-    return res;
-  }
-  async importDocuments(args: MoveDocuments) {
-    const res = await fireMethods.importDocuments(args);
+  async moveDocuments(args: MoveDocuments) {
+    const res = await fireMethods.moveDocuments(args);
     await this.log({ ...args, res });
 
     return res;

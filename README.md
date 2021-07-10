@@ -96,6 +96,13 @@ await firestore.updateDocument({
   project: "someproj",
   value: { firstname: { stringValue: "Jeff" } },
 });
+// move documents import/export may require admin account token
+await firestore.moveDocuments({
+  collection: "users",
+  collectionIds: undefined, // export all documents
+  outputUriPrefix: "gs://BUCKET_NAME[/NAMESPACE_PATH]", // replace with your bucket name and namespace
+  type: "export",
+});
 ```
 
 ## Environment Variables
