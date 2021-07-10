@@ -19,6 +19,7 @@ import {
   setDatabase,
   setToken,
   setProjectID,
+  setProjectKey,
   setTokenFromServiceAccount,
   setTokenFromEmailPassword,
 } from "https://deno.land/x/dfirestore/mod.ts";
@@ -40,11 +41,13 @@ setTokenFromEmailPassword(
 );
 // Optional: Manually set authentication from access token (jwt)
 setToken("someidtoken");
+
 // Optional: set db
 setDatabase("(default)");
-
-// Optional: set project id but nice to use
-setProjectID("myprojectid");
+// Optional: set global project id for all request - nice to use.
+setProjectID("my_project_id");
+// Optional: set project web key or use the env FIREBASE_PROJECT_KEY
+setProjectKey("mywebprojectkey");
 ```
 
 ### Client
@@ -94,7 +97,7 @@ await firestore.updateDocument({
 });
 ```
 
-## ENV Variables
+## Environment Variables
 
 The environment variables below will help setup the project defaults so you do not have to manually configure at the application level. If you are not going to setup any of the envs below you need to make sure you pass in the required params.
 
@@ -114,7 +117,7 @@ FIREBASE_AUTH_EMAIL=
 FIREBASE_AUTH_PASSWORD=
 ```
 
-### Explicite User Token
+### Explicit User Token
 
 ```
 FIREBASE_TOKEN=

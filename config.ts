@@ -2,7 +2,6 @@ const FIREBASE_TOKEN = "FIREBASE_TOKEN";
 const FIREBASE_DATABASE = "FIREBASE_DATABASE";
 const FIREBASE_PROJECT_ID = "FIREBASE_PROJECT_ID";
 const FIREBASE_PROJECT_KEY = "FIREBASE_PROJECT_KEY";
-
 const firebaseAuthTokenPath = "./firebase_auth_token.json";
 const descriptor = {
   name: "read",
@@ -14,9 +13,6 @@ const writeAuthStatus = await Deno.permissions.query({
   ...descriptor,
   name: "write",
 });
-
-export const projectID = Deno.env.get(FIREBASE_PROJECT_ID) ?? "";
-export const projectkey = Deno.env.get(FIREBASE_PROJECT_KEY) ?? "";
 
 let readAuthAllowed = false;
 let writeAuthAllowed = false;
@@ -32,10 +28,16 @@ if (writeAuthStatus.state === "granted") {
 
 const config = {
   firebaseDb: Deno.env.get("FIREBASE_DATABASE") ?? "(default)",
-  host: (project?: string) =>
-    `https://firestore.googleapis.com/v1/projects/${project ?? projectID}`,
+  host(project?: string) {
+    return `https://firestore.googleapis.com/v1/projects/${
+      project ?? this.projectID
+    }`;
+  },
   get token() {
     return this.storedToken?.id_token ?? Deno.env.get(FIREBASE_TOKEN);
+  },
+  get projectID() {
+    return Deno.env.get(FIREBASE_PROJECT_ID);
   },
   get storedToken() {
     try {
@@ -52,6 +54,10 @@ const config = {
 
 const setProjectID = (id: string) => {
   Deno.env.set(FIREBASE_PROJECT_ID, id);
+};
+
+const setProjectKey = (key: string) => {
+  Deno.env.set(FIREBASE_PROJECT_KEY, key);
 };
 
 const setToken = (token: string): string => {
@@ -123,13 +129,16 @@ const setTokenFromEmailPassword = async (
       returnSecureToken: true,
     };
   }
-  const firebase = await fetch(`https://${baseUrl}?key=${key ?? projectkey}`, {
-    headers: {
-      contentType: "application/json",
-    },
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+  const firebase = await fetch(
+    `https://${baseUrl}?key=${key ?? Deno.env.get(FIREBASE_PROJECT_KEY) ?? ""}`,
+    {
+      headers: {
+        contentType: "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(body),
+    }
+  );
 
   const json = await firebase.json();
   const token = json?.idToken;
@@ -180,6 +189,7 @@ export {
   setToken,
   setDatabase,
   setProjectID,
+  setProjectKey,
   setRefetchBeforeExp,
   setTokenFromServiceAccount,
   setTokenFromEmailPassword,
