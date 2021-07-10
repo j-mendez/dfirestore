@@ -1,4 +1,4 @@
-import "https://deno.land/x/dotenv/load.ts";
+import "https://deno.land/x/dotenv@v2.0.0/load.ts";
 import { client } from "./client.ts";
 import { config } from "./config.ts";
 import type {
