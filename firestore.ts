@@ -143,33 +143,33 @@ const fireMethods = {
     });
   },
   exportDocuments: async ({
-    authorization,
     collectionIds,
     outputUriPrefix,
+    ...params
   }: MoveDocuments) => {
     return await client.request({
       method: "POST",
       url: ":exportDocuments",
-      authorization,
       reqBody: {
         collectionIds,
         outputUriPrefix,
       },
+      ...params,
     });
   },
   importDocuments: async ({
-    authorization,
     collectionIds,
     outputUriPrefix,
+    ...params
   }: MoveDocuments) => {
     return await client.request({
       method: "POST",
       url: ":importDocuments",
-      authorization,
       reqBody: {
         collectionIds,
         outputUriPrefix,
       },
+      ...params,
     });
   },
   rollback: async ({ transaction, authorization }: RollBack) => {

@@ -3,24 +3,18 @@ import type { FetchRequest, FireResponse } from "./types.ts";
 
 const client = {
   request: async ({
-    url,
-    reqBody,
-    method = "POST",
-    database,
-    authorization,
-    project,
     pageSize,
     pageToken,
     orderBy,
     mask,
     showMissing,
+    ...params
   }: FetchRequest): Promise<FireResponse> => {
     const requestHeaders: HeadersInit = new Headers();
 
     requestHeaders.set("Content-Type", "application/json");
 
-    const token =
-      typeof authorization !== "undefined" ? authorization : config.token;
+    const token = params?.authorization ?? config.token;
 
     if (token) {
       requestHeaders.set("Authorization", `Bearer ${token}`);
@@ -41,12 +35,12 @@ const client = {
       : "";
 
     const req = await fetch(
-      `${config.host(project)}/databases/${
-        database ?? config.firebaseDb
-      }/${url}${size}${page}${order}${missing}${fields}`,
+      `${config.host(params?.project)}/databases/${
+        params?.database ?? config.firebaseDb
+      }/${params.url}${size}${page}${order}${missing}${fields}`,
       {
-        method,
-        body: reqBody && JSON.stringify(reqBody),
+        method: params.method ?? "POST",
+        body: params?.reqBody && JSON.stringify(params.reqBody),
         headers: requestHeaders,
       }
     );

@@ -179,7 +179,9 @@ export type ImportExport = {
 };
 
 export type MoveDocuments = Pick<RequestInterface, "authorization"> &
-  ImportExport;
+  ImportExport & {
+    project: RequestInterface["project"];
+  };
 
 export interface RollBack {
   transaction: string;

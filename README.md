@@ -1,6 +1,7 @@
 # dfirestore
 
 ![test workflow](https://github.com/j-mendez/dfirestore/actions/workflows/test.yml/badge.svg)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ed5ddd5e541f49f61382/maintainability)](https://codeclimate.com/github/j-mendez/dfirestore/maintainability)
 
 a deno [Firestore](https://firebase.google.com/docs/firestore) REST client
 
