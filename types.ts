@@ -188,3 +188,11 @@ export interface RollBack {
   transaction: string;
   authorization: RequestInterface["authorization"];
 }
+
+export type ListParams = {
+  size?: string;
+  page?: string;
+  order?: string;
+  fields?: string;
+  missing?: string;
+};
