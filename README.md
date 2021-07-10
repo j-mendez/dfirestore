@@ -106,18 +106,17 @@ The environment variables below will help setup the project defaults so you do n
 ```
 FIREBASE_DATABASE=(default)
 FIREBASE_PROJECT_ID=
-```
-
-### IAM | User
-
-```
-# the web api key
 FIREBASE_PROJECT_KEY=
+```
+
+### Authentication
+
+```
 FIREBASE_AUTH_EMAIL=
 FIREBASE_AUTH_PASSWORD=
 ```
 
-### Explicit User Token
+### Explicit Access Token
 
 ```
 FIREBASE_TOKEN=
@@ -128,5 +127,5 @@ FIREBASE_TOKEN=
 Log all events (creates a log document on every event )
 
 ```
-EVENT_LOG=true
+FIREBASE_EVENT_LOG=true
 ```

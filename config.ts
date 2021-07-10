@@ -48,7 +48,7 @@ const config = {
     }
   },
   get eventLog() {
-    return Boolean(Deno.env.get("EVENT_LOG"));
+    return Boolean(Deno.env.get("FIREBASE_EVENT_LOG"));
   },
 };
 
