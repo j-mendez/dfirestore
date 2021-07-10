@@ -1,14 +1,29 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { client } from "./client.ts";
 import { config } from "./config.ts";
-import type { RequestInterface, FireEvents } from "./types.ts";
+import type {
+  BeginTransaction,
+  CommitTransaction,
+  CreateDocument,
+  DeleteDocument,
+  GetDocument,
+  FireEvents,
+  RequestInterface,
+  UpdateDocument,
+} from "./types.ts";
 
-const validateRequest = ({ collection, id }: RequestInterface) => {
+const COLLECTION_ERROR = "Collection Required";
+const ID_ERROR = "ID Required";
+
+const validateRequest = ({
+  collection,
+  id,
+}: Pick<RequestInterface, "collection" | "id">) => {
   if (!collection) {
-    throw new Error("Collection required");
+    throw new Error(COLLECTION_ERROR);
   }
   if (!id) {
-    throw new Error("ID Required");
+    throw new Error(ID_ERROR);
   }
 };
 
@@ -19,9 +34,9 @@ const fireMethods = {
     id,
     value,
     project,
-  }: RequestInterface) => {
+  }: CreateDocument) => {
     if (!collection) {
-      throw new Error("Collection required");
+      throw new Error(COLLECTION_ERROR);
     }
     return await client.request({
       method: "POST",
@@ -38,7 +53,7 @@ const fireMethods = {
     collection,
     id,
     project,
-  }: RequestInterface) => {
+  }: DeleteDocument) => {
     validateRequest({ collection, id });
 
     return await client.request({
@@ -58,9 +73,9 @@ const fireMethods = {
     pageToken,
     orderBy,
     showMissing,
-  }: RequestInterface) => {
+  }: GetDocument) => {
     if (!collection) {
-      throw new Error("Collection required");
+      throw new Error(COLLECTION_ERROR);
     }
     return await client.request({
       method: "GET",
@@ -80,7 +95,7 @@ const fireMethods = {
     id,
     value,
     project,
-  }: RequestInterface) => {
+  }: UpdateDocument) => {
     validateRequest({ collection, id });
 
     return await client.request({
@@ -97,7 +112,7 @@ const fireMethods = {
     authorization,
     options,
     project,
-  }: RequestInterface) => {
+  }: BeginTransaction) => {
     return await client.request({
       method: "POST",
       url: `documents:beginTransaction`,
@@ -113,7 +128,7 @@ const fireMethods = {
     writes,
     project,
     transaction,
-  }: RequestInterface) => {
+  }: CommitTransaction) => {
     return await client.request({
       method: "POST",
       url: `documents:commit`,
@@ -143,37 +158,37 @@ class FireStore {
     }
     Promise.resolve();
   }
-  async beginTransaction(args: RequestInterface) {
+  async beginTransaction(args: Partial<RequestInterface>) {
     const res = await fireMethods.beginTransaction(args);
     await this.log({ ...args, res });
 
     return res;
   }
-  async commitTransaction(args: RequestInterface) {
+  async commitTransaction(args: Partial<RequestInterface>) {
     const res = await fireMethods.commitTransaction(args);
     await this.log({ ...args, res });
 
     return res;
   }
-  async createDocument(args: RequestInterface) {
+  async createDocument(args: Partial<RequestInterface>) {
     const res = await fireMethods.createDocument(args);
     await this.log({ ...args, res });
 
     return res;
   }
-  async deleteDocument(args: RequestInterface) {
+  async deleteDocument(args: Partial<RequestInterface>) {
     const res = await fireMethods.deleteDocument(args);
     await this.log({ ...args, res });
 
     return res;
   }
-  async getDocument(args: RequestInterface) {
+  async getDocument(args: Partial<RequestInterface>) {
     const res = await fireMethods.getDocument(args);
     await this.log({ ...args, res });
 
     return res;
   }
-  async updateDocument(args: RequestInterface) {
+  async updateDocument(args: Partial<RequestInterface>) {
     const res = await fireMethods.updateDocument(args);
     await this.log({ ...args, res });
 

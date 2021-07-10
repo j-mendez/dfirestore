@@ -121,5 +121,46 @@ export interface FireResponse {
 export interface RequestInterface extends FireRequest, Partial<FetchRequest> {}
 
 export interface FireEvents {
-  log: RequestInterface & { res?: FireResponse };
+  log: Partial<RequestInterface> & { res?: Partial<FireResponse> };
 }
+
+export type GetDocument = Pick<
+  RequestInterface,
+  | "authorization"
+  | "collection"
+  | "id"
+  | "project"
+  | "value"
+  | "showMissing"
+  | "mask"
+  | "pageSize"
+  | "pageToken"
+  | "orderBy"
+>;
+
+export type DeleteDocument = Pick<
+  RequestInterface,
+  "authorization" | "collection" | "id" | "project"
+>;
+
+export type CreateDocument = Partial<
+  Pick<
+    RequestInterface,
+    "authorization" | "collection" | "id" | "project" | "value"
+  >
+>;
+
+export type UpdateDocument = Pick<
+  RequestInterface,
+  "authorization" | "collection" | "id" | "value" | "project"
+>;
+
+export type BeginTransaction = Pick<
+  RequestInterface,
+  "authorization" | "options" | "project"
+>;
+
+export type CommitTransaction = Pick<
+  RequestInterface,
+  "authorization" | "options" | "project" | "writes" | "transaction"
+>;
