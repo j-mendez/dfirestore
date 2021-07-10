@@ -2,6 +2,7 @@ import "https://deno.land/x/dotenv/load.ts";
 import { client } from "./client.ts";
 import { config } from "./config.ts";
 import type {
+  Arguements,
   BeginTransaction,
   CommitTransaction,
   CreateDocument,
@@ -173,68 +174,50 @@ const fireMethods = {
 };
 
 class FireStore {
-  async log({ id, collection, res }: FireEvents["log"]) {
+  async action(
+    args: Arguements & Partial<RequestInterface>,
+    event: FireEvents["event"]
+  ) {
+    const res = await fireMethods[event](args);
+
     if (config.eventLog) {
       await fireMethods.createDocument({
         id: undefined,
         value: {
-          id: { stringValue: id },
-          collection: { stringValue: collection },
-          json_data: { stringValue: JSON.stringify(res) },
+          id: { stringValue: args?.id },
+          collection: { stringValue: args?.collection },
+          json_data: { stringValue: (res && JSON.stringify(res)) ?? "" },
           timestamp: { timestampValue: new Date() },
         },
         collection: "event_log",
       });
     }
-    Promise.resolve();
+
+    return res;
   }
   async beginTransaction(args: BeginTransaction) {
-    const res = await fireMethods.beginTransaction(args);
-    await this.log({ ...args, res });
-
-    return res;
+    return await this.action(args, "beginTransaction");
   }
   async commitTransaction(args: CommitTransaction) {
-    const res = await fireMethods.commitTransaction(args);
-    await this.log({ ...args, res });
-
-    return res;
+    return await this.action(args, "commitTransaction");
   }
   async createDocument(args: CreateDocument) {
-    const res = await fireMethods.createDocument(args);
-    await this.log({ ...args, res });
-
-    return res;
+    return await this.action(args, "createDocument");
   }
   async deleteDocument(args: DeleteDocument) {
-    const res = await fireMethods.deleteDocument(args);
-    await this.log({ ...args, res });
-
-    return res;
+    return await this.action(args, "deleteDocument");
   }
   async getDocument(args: GetDocument) {
-    const res = await fireMethods.getDocument(args);
-    await this.log({ ...args, res });
-
-    return res;
+    return await this.action(args, "getDocument");
   }
   async updateDocument(args: UpdateDocument) {
-    const res = await fireMethods.updateDocument(args);
-    await this.log({ ...args, res });
-
-    return res;
+    return await this.action(args, "updateDocument");
   }
   async moveDocuments(args: MoveDocuments) {
-    const res = await fireMethods.moveDocuments(args);
-    await this.log({ ...args, res });
-
-    return res;
+    return await this.action(args, "moveDocuments");
   }
   async rollback(args: RollBack) {
-    const res = await fireMethods.rollback(args);
-    await this.log({ ...args, res });
-
-    return res;
+    return await this.action(args, "rollback");
   }
 }
 

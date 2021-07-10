@@ -121,8 +121,19 @@ export interface FireResponse {
 
 export interface RequestInterface extends FireRequest, Partial<FetchRequest> {}
 
+export type FireMethods =
+  | "createDocument"
+  | "rollback"
+  | "updateDocument"
+  | "moveDocuments"
+  | "getDocument"
+  | "commitTransaction"
+  | "deleteDocument"
+  | "beginTransaction";
+
 export interface FireEvents {
-  log: Partial<RequestInterface> & { res?: Partial<FireResponse> };
+  log: Exclude<Partial<FetchRequest>, "outputUriPrefix">;
+  event: FireMethods;
 }
 
 export type GetDocument = Pick<
@@ -175,18 +186,18 @@ export type ImportExport = {
    * Google Cloud Storage bucket and NAMESPACE_PATH
    * is an optional Google Cloud Storage namespace path.
    */
-  outputUriPrefix: string;
+  outputUriPrefix?: string;
 };
 
 export type MoveDocuments = Pick<RequestInterface, "authorization"> &
   ImportExport & {
-    project: RequestInterface["project"];
-    type: "import" | "export";
+    project?: RequestInterface["project"];
+    type?: "import" | "export";
   };
 
 export interface RollBack {
-  transaction: string;
-  authorization: RequestInterface["authorization"];
+  transaction?: string;
+  authorization?: RequestInterface["authorization"];
 }
 
 export type ListParams = {
@@ -196,3 +207,15 @@ export type ListParams = {
   fields?: string;
   missing?: string;
 };
+
+export type Arguements =
+  | BeginTransaction
+  | RollBack
+  | MoveDocuments
+  | ImportExport
+  | CommitTransaction
+  | BeginTransaction
+  | UpdateDocument
+  | CreateDocument
+  | DeleteDocument
+  | GetDocument;
