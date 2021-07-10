@@ -23,7 +23,6 @@ Deno.test({
         lastname: { stringValue: "Jeff" },
       },
     });
-
     if (d.error?.status === "ALREADY_EXISTS") {
       assertEquals(d.error.code, 409);
     } else {
@@ -107,6 +106,7 @@ Deno.test({
         lastname: { stringValue: "Jeff" },
       },
     });
+
     assertEquals(d.fields.lastname.stringValue, "Jeff");
   },
 });
@@ -114,11 +114,8 @@ Deno.test({
 // Deno.test({
 //   name: "firestore should begin and commit transaction",
 //   fn: async () => {
-//     const d = await firestore.beginTransaction({
-//       transaction: "transaction_id",
-//     });
+//     const d = await firestore.beginTransaction({});
 //     assertEquals(typeof d.id, "string");
-
 //     const c = await firestore.commitTransaction({
 //       ...body,
 //       transaction: d.id,

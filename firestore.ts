@@ -10,6 +10,7 @@ import type {
   GetDocument,
   FireEvents,
   RequestInterface,
+  RollBack,
   UpdateDocument,
 } from "./types.ts";
 
@@ -171,6 +172,16 @@ const fireMethods = {
       },
     });
   },
+  rollback: async ({ transaction, authorization }: RollBack) => {
+    return await client.request({
+      method: "POST",
+      url: "documents:rollback",
+      authorization,
+      reqBody: {
+        transaction,
+      },
+    });
+  },
 };
 
 class FireStore {
@@ -233,6 +244,12 @@ class FireStore {
   }
   async importDocuments(args: MoveDocuments) {
     const res = await fireMethods.importDocuments(args);
+    await this.log({ ...args, res });
+
+    return res;
+  }
+  async rollback(args: RollBack) {
+    const res = await fireMethods.rollback(args);
     await this.log({ ...args, res });
 
     return res;

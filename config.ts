@@ -123,7 +123,6 @@ const setTokenFromEmailPassword = async (
       returnSecureToken: true,
     };
   }
-
   const firebase = await fetch(`https://${baseUrl}?key=${key ?? projectkey}`, {
     headers: {
       contentType: "application/json",

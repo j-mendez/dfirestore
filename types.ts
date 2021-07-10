@@ -1,8 +1,8 @@
 export interface TransactionOptions {
-  readOnly: {
+  readOnly?: {
     readTime: string;
   };
-  readWrite: {
+  readWrite?: {
     retryTransaction: string;
   };
 }
@@ -116,6 +116,7 @@ export interface FireResponse {
   documents: Document[];
   fields: MapValue["fields"];
   error?: FireError;
+  id?: string;
 }
 
 export interface RequestInterface extends FireRequest, Partial<FetchRequest> {}
@@ -179,3 +180,8 @@ export type ImportExport = {
 
 export type MoveDocuments = Pick<RequestInterface, "authorization"> &
   ImportExport;
+
+export interface RollBack {
+  transaction: string;
+  authorization: RequestInterface["authorization"];
+}
