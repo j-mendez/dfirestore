@@ -13,7 +13,7 @@ jobs:
       - name: Run test
         run:
           FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID FIREBASE_TOKEN=$FIREBASE_TOKEN FIREBASE_PROJECT_KEY=$FIREBASE_PROJECT_KEY
-          FIREBASE_AUTH_EMAIL=$FIREBASE_AUTH_EMAIL FIREBASE_AUTH_PASSWORD=$FIREBASE_AUTH_PASSWORD
+          FIREBASE_AUTH_EMAIL=$FIREBASE_AUTH_EMAIL FIREBASE_AUTH_PASSWORD=$FIREBASE_AUTH_PASSWORD FIREBASE_REFRESH_RATE=$FIREBASE_REFRESH_RATE
           deno test --unstable --allow-run --allow-net=firestore.googleapis.com,identitytoolkit.googleapis.com --allow-env --allow-read --allow-write -A
         env:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
@@ -21,3 +21,4 @@ jobs:
           FIREBASE_AUTH_EMAIL: ${{ secrets.FIREBASE_AUTH_EMAIL }}
           FIREBASE_AUTH_PASSWORD: ${{ secrets.FIREBASE_AUTH_PASSWORD }}
           FIREBASE_PROJECT_KEY: ${{ secrets.FIREBASE_PROJECT_KEY }}
+          FIREBASE_REFRESH_RATE: ${{ secrets.FIREBASE_REFRESH_RATE }}

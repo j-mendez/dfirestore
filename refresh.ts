@@ -1,22 +1,8 @@
-import { setRefetchBeforeExp, projectkey } from "./config.ts";
+import { config } from "./config.ts";
+
+const { projectKey } = config;
 
 const [tick, refreshToken] = Deno.args;
-
-/**
- * write.ts
- */
-async function writeJson(
-  path: string,
-  data: Record<string, unknown>
-): Promise<string> {
-  try {
-    await Deno.writeTextFile(path, JSON.stringify(data));
-
-    return path;
-  } catch (e) {
-    return e.message;
-  }
-}
 
 /*
  * Refetch token using refresh token
@@ -25,7 +11,7 @@ export const refetchToken = async (params?: { refreshToken?: string }) => {
   const { refreshToken } = params ?? {};
   const baseUrl = "securetoken.googleapis.com/v1/token";
 
-  const firebase = await fetch(`https://${baseUrl}?key=${projectkey}`, {
+  const firebase = await fetch(`https://${baseUrl}?key=${projectKey}`, {
     headers: {
       contentType: "application/json",
     },
@@ -38,14 +24,13 @@ export const refetchToken = async (params?: { refreshToken?: string }) => {
 
   const json = await firebase.json();
 
-  json && (await writeJson("./firebase_auth_token.json", json));
-
-  await setRefetchBeforeExp({
+  const token = {
     expiresIn: json.expires_in,
     refreshToken: json.refresh_token,
-  });
+    accessToken: json.id_token,
+  };
 
-  await Deno.kill(Deno.pid, Deno.Signal.SIGINT);
+  Deno.stdout.write(new TextEncoder().encode(JSON.stringify(token)));
 };
 
 setTimeout(

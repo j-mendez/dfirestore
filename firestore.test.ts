@@ -1,6 +1,8 @@
-import { assertEquals } from "./test_deps.ts";
+import { assertEquals, assertNotEquals } from "./test_deps.ts";
 import { firestore } from "./firestore.ts";
 import {
+  FIREBASE_TOKEN,
+  FIREBASE_REFRESH_RATE,
   setToken,
   setTokenFromServiceAccount,
   setTokenFromEmailPassword,
@@ -11,7 +13,18 @@ const body = {
   id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
 };
 
+const refreshRate = Number(Deno.env.get(FIREBASE_REFRESH_RATE || 1));
+
 const t = await setTokenFromEmailPassword();
+
+Deno.test({
+  name: "firestore should get token from auth",
+  fn: async () => {
+    const tt = await setTokenFromEmailPassword();
+
+    assertEquals(!!tt, true);
+  },
+});
 
 Deno.test({
   name: "firestore should create a new item in collection",
@@ -137,6 +150,21 @@ Deno.test({
       const v = d.slice(0, 4);
       assertEquals(v, "ya29");
     }
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: `firestore should refresh token and set env in ${refreshRate}s`,
+  fn: async () => {
+    const t = await setTokenFromEmailPassword(undefined, true);
+    assertEquals(t, Deno.env.get(FIREBASE_TOKEN));
+
+    setTimeout(() => {
+      assertNotEquals(t, Deno.env.get(FIREBASE_TOKEN));
+      Deno.kill(0);
+    }, refreshRate * 2000);
   },
   sanitizeResources: false,
   sanitizeOps: false,

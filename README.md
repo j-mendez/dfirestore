@@ -13,7 +13,7 @@ For examples of values to use when perform creates/updates can be found at [Fire
 
 ### Configuration
 
-All pre-configuration settings are optional. You should use `setProjectID` to establish your project if you are going to use the same one for every request. If you the second param for `setTokenFromEmailPassword` is set to true you need to make sure you have read and write permissions since we currently use a sub process that needs the permissions to store the new token before expiration. Make sure to start deno with the following `--unstable --allow-run --allow-net=firestore.googleapis.com,identitytoolkit.googleapis.com` to allow network request to firestore.
+All pre-configuration settings are optional and can be set via env variables. You should use `setProjectID` to establish your project if you are going to use the same one for every request. Make sure to start deno with the following `--allow-env --allow-read --unstable --allow-run --allow-net=firestore.googleapis.com,identitytoolkit.googleapis.com` to allow network request to firestore.
 
 ```typescript
 import {
@@ -24,11 +24,6 @@ import {
   setTokenFromServiceAccount,
   setTokenFromEmailPassword,
 } from "https://deno.land/x/dfirestore/mod.ts";
-
-/*
- * CONFIGURATION: Add authentication token for all request.
- * Use one of the `setToken` methods below all configs are optional.
- */
 
 // Optional: If GoogleService-Info.plist and gcloud installed on machine run to get service token
 setTokenFromServiceAccount();
@@ -136,3 +131,14 @@ Log all events (creates a log document on every event )
 ```
 FIREBASE_EVENT_LOG=true
 ```
+
+### Other
+
+```
+# useful for when using backgroundRefresh on ci to lower the timeout (defaults to firebase exp)
+FIREBASE_REFRESH_RATE=
+```
+
+## CLI
+
+A cli entrypoint that can manage the access token between steps is WIP. For now set the token prior per run.
