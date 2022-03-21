@@ -1,51 +1,26 @@
-const FIREBASE_TOKEN = "FIREBASE_TOKEN";
-const FIREBASE_DATABASE = "FIREBASE_DATABASE";
-const FIREBASE_PROJECT_ID = "FIREBASE_PROJECT_ID";
-const FIREBASE_PROJECT_KEY = "FIREBASE_PROJECT_KEY";
-const firebaseAuthTokenPath = "./firebase_auth_token.json";
-const descriptor = {
-  name: "read",
-  path: firebaseAuthTokenPath,
-} as const;
+export const FIREBASE_TOKEN = "FIREBASE_TOKEN";
+export const FIREBASE_DATABASE = "FIREBASE_DATABASE";
+export const FIREBASE_PROJECT_ID = "FIREBASE_PROJECT_ID";
+export const FIREBASE_PROJECT_KEY = "FIREBASE_PROJECT_KEY";
+export const FIREBASE_REFRESH_RATE = "FIREBASE_REFRESH_RATE";
 
-const readAuthStatus = await Deno.permissions.query(descriptor);
-const writeAuthStatus = await Deno.permissions.query({
-  ...descriptor,
-  name: "write",
-});
-
-let readAuthAllowed = false;
-let writeAuthAllowed = false;
 let backgroundRefetchStarted = false;
 
-if (readAuthStatus.state === "granted") {
-  readAuthAllowed = true;
-}
-
-if (writeAuthStatus.state === "granted") {
-  writeAuthAllowed = true;
-}
-
 const config = {
-  firebaseDb: Deno.env.get("FIREBASE_DATABASE") ?? "(default)",
+  firebaseDb: Deno.env.get("FIREBASE_DATABASE") || "(default)",
   host(project?: string) {
     return `https://firestore.googleapis.com/v1/projects/${
       project ?? this.projectID
     }`;
   },
   get token() {
-    return this.storedToken?.id_token ?? Deno.env.get(FIREBASE_TOKEN);
+    return Deno.env.get(FIREBASE_TOKEN);
   },
   get projectID() {
     return Deno.env.get(FIREBASE_PROJECT_ID);
   },
-  get storedToken() {
-    try {
-      const file = readAuthAllowed && Deno.readTextFileSync(descriptor.path);
-      return file ? JSON.parse(file) : null;
-    } catch (_e) {
-      return null;
-    }
+  get projectKey() {
+    return Deno.env.get(FIREBASE_PROJECT_KEY);
   },
   get eventLog() {
     return Boolean(Deno.env.get("FIREBASE_EVENT_LOG"));
@@ -62,12 +37,6 @@ const setProjectKey = (key: string) => {
 
 const setToken = (token: string): string => {
   Deno.env.set(FIREBASE_TOKEN, token);
-  if (writeAuthAllowed) {
-    Deno.writeTextFileSync(
-      "./firebase_auth_token.json",
-      JSON.stringify({ id_token: token })
-    );
-  }
   return token;
 };
 
@@ -147,7 +116,7 @@ const setTokenFromEmailPassword = async (
 
   if (refresh) {
     setRefetchBeforeExp({
-      expiresIn: json.expiresIn,
+      expiresIn: Deno.env.get(FIREBASE_REFRESH_RATE) || json.expiresIn,
       refreshToken: json.refreshToken,
     });
   }
@@ -160,12 +129,12 @@ type Token = {
   refreshToken: string;
 };
 
-// TODO: GET PID ACCESS TO VAR FOR HARD STOP
-const setRefetchBeforeExp = ({ expiresIn, refreshToken }: Token) => {
+// BACKGROUND PROCESS to refresh token
+const setRefetchBeforeExp = async ({ expiresIn, refreshToken }: Token) => {
   const expMS = (expiresIn / 60) * 60000;
 
   if (!backgroundRefetchStarted) {
-    Deno.run({
+    const p = Deno.run({
       cmd: [
         "deno",
         "run",
@@ -179,7 +148,33 @@ const setRefetchBeforeExp = ({ expiresIn, refreshToken }: Token) => {
         String(expMS),
         refreshToken,
       ],
+      stdout: "piped",
+      stderr: "piped",
     });
+
+    try {
+      const { code } = await p.status();
+      const rawOutput = await p.output();
+      const rawError = await p.stderrOutput();
+
+      let jsonOutput;
+
+      if (code === 0) {
+        jsonOutput = JSON.parse(new TextDecoder().decode(rawOutput));
+        if (jsonOutput && jsonOutput.accessToken) {
+          Deno.env.set(FIREBASE_TOKEN, jsonOutput.accessToken);
+        }
+      } else {
+        const errorString = new TextDecoder().decode(rawError);
+        console.error(errorString);
+      }
+
+      backgroundRefetchStarted = false;
+      // Recursively restart refetch
+      setRefetchBeforeExp(jsonOutput);
+    } catch (e) {
+      console.error(e);
+    }
   }
   backgroundRefetchStarted = true;
 };
