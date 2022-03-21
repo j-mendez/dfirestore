@@ -4,6 +4,7 @@ export {
   setToken,
   setDatabase,
   setProjectID,
+  setProjectKey,
   setRefetchBeforeExp,
   setTokenFromServiceAccount,
   setTokenFromEmailPassword,
