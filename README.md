@@ -103,42 +103,18 @@ await firestore.moveDocuments({
 
 The environment variables below will help setup the project defaults so you do not have to manually configure at the application level. If you are not going to setup any of the envs below you need to make sure you pass in the required params.
 
-### Project
-
-```
-FIREBASE_DATABASE=(default)
-FIREBASE_PROJECT_ID=
-FIREBASE_PROJECT_KEY=
-```
-
-### Authentication
-
 ```
 FIREBASE_AUTH_EMAIL=
 FIREBASE_AUTH_PASSWORD=
-```
-
-### Explicit Access Token
-
-```
+FIREBASE_PROJECT_KEY=
+FIREBASE_PROJECT_ID=
+FIREBASE_DATABASE=(default)
 FIREBASE_TOKEN=
-```
-
-### Events
-
-Log all events (creates a log document on every event )
-
-```
-FIREBASE_EVENT_LOG=true
-```
-
-### Other
-
-```
-# useful for when using backgroundRefresh on ci to lower the timeout (defaults to firebase exp)
+FIREBASE_EVENT_LOG=
 FIREBASE_REFRESH_RATE=
+CI=
 ```
 
 ## CLI
 
-A cli entrypoint that can manage the access token between steps is WIP. For now set the token prior per run.
+A CLI entrypoint that can manage the access token between steps is WIP. For now set the token prior per run.
