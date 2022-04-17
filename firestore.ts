@@ -1,6 +1,7 @@
 import "https://deno.land/x/dotenv@v2.0.0/load.ts";
-import { client } from "./client.ts";
 import { config } from "./config.ts";
+import { fireMethods } from "./actions.ts";
+
 import type {
   Arguements,
   BeginTransaction,
@@ -15,165 +16,23 @@ import type {
   UpdateDocument,
 } from "./types.ts";
 
-const COLLECTION_ERROR = "Collection Required";
-const ID_ERROR = "ID Required";
-
-const validateRequest = ({
-  collection,
-  id,
-}: Pick<RequestInterface, "collection" | "id">) => {
-  if (!collection) {
-    throw new Error(COLLECTION_ERROR);
-  }
-  if (!id) {
-    throw new Error(ID_ERROR);
-  }
-};
-
-const fireMethods = {
-  createDocument: async ({
-    authorization,
-    collection,
-    id,
-    value,
-    project,
-  }: CreateDocument) => {
-    if (!collection) {
-      throw new Error(COLLECTION_ERROR);
-    }
-    return await client.request({
-      method: "POST",
-      url: `documents/${collection}${id ? `?documentId=${id}` : ""}`,
-      authorization,
-      reqBody: {
-        fields: value,
-      },
-      project,
-    });
-  },
-  deleteDocument: async ({
-    authorization,
-    collection,
-    id,
-    project,
-  }: DeleteDocument) => {
-    validateRequest({ collection, id });
-
-    return await client.request({
-      method: "DELETE",
-      url: `documents/${collection}/${id}`,
-      authorization,
-      project,
-    });
-  },
-  getDocument: async ({
-    authorization,
-    collection,
-    id,
-    mask,
-    project,
-    pageSize,
-    pageToken,
-    orderBy,
-    showMissing,
-  }: GetDocument) => {
-    if (!collection) {
-      throw new Error(COLLECTION_ERROR);
-    }
-    return await client.request({
-      method: "GET",
-      url: id ? `documents/${collection}/${id}` : `documents/${collection}`,
-      authorization,
-      project,
-      pageSize,
-      pageToken,
-      orderBy,
-      mask,
-      showMissing,
-    });
-  },
-  updateDocument: async ({
-    authorization,
-    collection,
-    id,
-    value,
-    project,
-  }: UpdateDocument) => {
-    validateRequest({ collection, id });
-
-    return await client.request({
-      method: "PATCH",
-      url: `documents/${collection}/${id}`,
-      authorization,
-      reqBody: {
-        fields: value,
-      },
-      project,
-    });
-  },
-  beginTransaction: async ({
-    authorization,
-    options,
-    project,
-  }: BeginTransaction) => {
-    return await client.request({
-      method: "POST",
-      url: `documents:beginTransaction`,
-      authorization,
-      reqBody: {
-        options,
-      },
-      project,
-    });
-  },
-  commitTransaction: async ({
-    authorization,
-    writes,
-    project,
-    transaction,
-  }: CommitTransaction) => {
-    return await client.request({
-      method: "POST",
-      url: `documents:commit`,
-      authorization,
-      reqBody: {
-        writes,
-      },
-      project,
-      transaction,
-    });
-  },
-  moveDocuments: async ({
-    authorization,
-    collectionIds,
-    outputUriPrefix,
-    project,
-    type,
-  }: MoveDocuments) => {
-    return await client.request({
-      method: "POST",
-      url: `":${type ?? "export"}Documents`,
-      authorization,
-      reqBody: {
-        collectionIds,
-        outputUriPrefix,
-      },
-      project,
-    });
-  },
-  rollback: async ({ transaction, authorization }: RollBack) => {
-    return await client.request({
-      method: "POST",
-      url: "documents:rollback",
-      authorization,
-      reqBody: {
-        transaction,
-      },
-    });
-  },
-};
-
 class FireStore {
+  constructor() {
+    if (config.eventLog) {
+      this.workerLog = new Worker(
+        new URL("./worker.ts", import.meta.url).href,
+        {
+          type: "module",
+          // @ts-ignore
+          deno: {
+            namespace: true,
+            permissions: "inherit",
+          },
+        }
+      );
+    }
+  }
+  workerLog?: Worker;
   async action(
     args: Arguements & Partial<RequestInterface>,
     event: FireEvents["event"]
@@ -181,17 +40,13 @@ class FireStore {
     const res = await fireMethods[event](args);
 
     if (config.eventLog) {
-      const pr = {
-        id: { stringValue: args?.id },
-        collection: { stringValue: args?.collection },
-        json_data: { stringValue: (res && JSON.stringify(res)) ?? "" },
-        timestamp: { timestampValue: new Date() },
-      };
-
-      await fireMethods.createDocument({
-        id: undefined,
-        value: pr,
-        collection: "event_log",
+      this?.workerLog?.postMessage({
+        pr: {
+          id: { stringValue: args?.id },
+          collection: { stringValue: args?.collection },
+          json_data: { stringValue: (res && JSON.stringify(res)) ?? "" },
+          timestamp: { timestampValue: new Date() },
+        },
       });
     }
 
@@ -225,4 +80,4 @@ class FireStore {
 
 const firestore = new FireStore();
 
-export { firestore };
+export { fireMethods, firestore, FireStore };

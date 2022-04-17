@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@main
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: "1.10.3"
+          deno-version: "1.20.6"
       - name: Run test
         run:
           FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID FIREBASE_TOKEN=$FIREBASE_TOKEN FIREBASE_PROJECT_KEY=$FIREBASE_PROJECT_KEY
