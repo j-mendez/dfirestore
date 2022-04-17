@@ -115,8 +115,8 @@ const setTokenFromEmailPassword = async (
   token && setToken(token);
 
   if (refresh) {
-    queueMicrotask(async () => {
-      await setRefetchBeforeExp({
+    queueMicrotask(() => {
+      setRefetchBeforeExp({
         expiresIn: Deno.env.get(FIREBASE_REFRESH_RATE) || json.expiresIn,
         refreshToken: json.refreshToken,
       });
