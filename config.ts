@@ -23,7 +23,7 @@ const config = {
     return Deno.env.get(FIREBASE_PROJECT_KEY);
   },
   get eventLog() {
-    return Boolean(Deno.env.get("FIREBASE_EVENT_LOG"));
+    return Deno.env.get("FIREBASE_EVENT_LOG") == "true";
   },
 };
 
@@ -115,9 +115,11 @@ const setTokenFromEmailPassword = async (
   token && setToken(token);
 
   if (refresh) {
-    setRefetchBeforeExp({
-      expiresIn: Deno.env.get(FIREBASE_REFRESH_RATE) || json.expiresIn,
-      refreshToken: json.refreshToken,
+    queueMicrotask(async () => {
+      await setRefetchBeforeExp({
+        expiresIn: Deno.env.get(FIREBASE_REFRESH_RATE) || json.expiresIn,
+        refreshToken: json.refreshToken,
+      });
     });
   }
 
@@ -171,7 +173,7 @@ const setRefetchBeforeExp = async ({ expiresIn, refreshToken }: Token) => {
 
       backgroundRefetchStarted = false;
       // Recursively restart refetch
-      setRefetchBeforeExp(jsonOutput);
+      await setRefetchBeforeExp(jsonOutput);
     } catch (e) {
       console.error(e);
     }

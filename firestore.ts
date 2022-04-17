@@ -181,14 +181,16 @@ class FireStore {
     const res = await fireMethods[event](args);
 
     if (config.eventLog) {
+      const pr = {
+        id: { stringValue: args?.id },
+        collection: { stringValue: args?.collection },
+        json_data: { stringValue: (res && JSON.stringify(res)) ?? "" },
+        timestamp: { timestampValue: new Date() },
+      };
+
       await fireMethods.createDocument({
         id: undefined,
-        value: {
-          id: { stringValue: args?.id },
-          collection: { stringValue: args?.collection },
-          json_data: { stringValue: (res && JSON.stringify(res)) ?? "" },
-          timestamp: { timestampValue: new Date() },
-        },
+        value: pr,
         collection: "event_log",
       });
     }
