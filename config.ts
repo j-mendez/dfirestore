@@ -172,8 +172,6 @@ const setRefetchBeforeExp = async ({ expiresIn, refreshToken }: Token) => {
       }
 
       backgroundRefetchStarted = false;
-      // Recursively restart refetch
-      await setRefetchBeforeExp(jsonOutput);
     } catch (e) {
       console.error(e);
     }
