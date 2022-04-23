@@ -13,6 +13,14 @@ const body = {
   id: "L0xO1Yri80WlrFSw6KxqccHhKhv2",
 };
 
+const mockUserCollection = {
+  ...body,
+  value: {
+    firstname: { stringValue: "Jeff" },
+    lastname: { stringValue: "Jeff" },
+  },
+};
+
 const refreshRate = Number(Deno.env.get(FIREBASE_REFRESH_RATE || 1));
 
 Deno.test("firestore", async (t: any) => {
@@ -25,13 +33,7 @@ Deno.test("firestore", async (t: any) => {
   });
 
   await t.step("firestore should create a new item in collection", async () => {
-    const d = await firestore.createDocument({
-      ...body,
-      value: {
-        firstname: { stringValue: "Jeff" },
-        lastname: { stringValue: "Jeff" },
-      },
-    });
+    const d = await firestore.createDocument(mockUserCollection);
     if (d.error?.status === "ALREADY_EXISTS") {
       assertEquals(d.error.code, 409);
     } else {
@@ -95,25 +97,7 @@ Deno.test("firestore", async (t: any) => {
   });
 
   await t.step("firestore should update item from collection", async () => {
-    const d = await firestore.updateDocument({
-      ...body,
-      value: {
-        firstname: { stringValue: "Jeff" },
-        lastname: { stringValue: "Jeff" },
-      },
-    });
-
-    assertEquals(d.fields.lastname.stringValue, "Jeff");
-  });
-
-  await t.step("firestore should update item from collection", async () => {
-    const d = await firestore.updateDocument({
-      ...body,
-      value: {
-        firstname: { stringValue: "Jeff" },
-        lastname: { stringValue: "Jeff" },
-      },
-    });
+    const d = await firestore.updateDocument(mockUserCollection);
 
     assertEquals(d.fields.lastname.stringValue, "Jeff");
   });
